@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171126">
+  <meta name="description" content="Your hand. Your blade. Slice flying fruit, dodge bombs, and chase your best score in Slice Club, a camera-powered arcade game.">
+  <title>Slice Club — Your hand. Your blade.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23d6fd51'/%3E%3Ctext x='32' y='47' text-anchor='middle' font-size='44'%3E✳%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a href="./" class="brand" aria-label="Slice Club home"><span class="brand-mark">✳</span> SLICE CLUB<span class="edition">ARCADE / 01</span></a>
+      <div class="toolbar">
+        <button id="help-button" class="quiet-button">How to play <span>?</span></button>
+        <button id="sound-button" class="icon-button" aria-label="Mute sound" aria-pressed="false" title="Sound (M)">♫</button>
+        <button id="fullscreen-button" class="icon-button" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
+      </div>
+    </header>
+
+    <section id="arena" class="arena" aria-label="Fruit slicing game">
+      <div class="arena-grid" aria-hidden="true"></div>
+      <canvas id="game" aria-label="Slice the flying fruit with your index finger, or drag with your mouse or touch." tabindex="0"></canvas>
+      <div id="hud" class="hud" hidden>
+        <div class="score-block"><span class="eyebrow">YOUR SCORE</span><strong id="score">000</strong><span id="combo" class="combo">LET’S MAKE A MESS</span></div>
+        <div class="round-clock"><span id="mode-label">ARCADE</span><strong id="timer">60</strong><span>SECONDS</span></div>
+        <div class="hud-right"><span class="best-score">BEST <b id="best">0</b></span><button id="pause-button" class="icon-button" aria-label="Pause game" title="Pause (Space)">Ⅱ</button></div>
+      </div>
+      <div id="welcome" class="welcome">
+        <div class="art-side"><div class="art-halo"></div><img class="fruit-art" src="assets/fruit-party.png" alt="Colorful fruit bursting through a bright slice" width="1536" height="1024"><span class="art-sticker">100% FRESH.<br>0% CHILL.</span><div class="art-caption"><span class="tiny-star">✦</span> YOUR HAND. YOUR BLADE.</div></div>
+        <div class="start-side">
+          <span class="kicker"><span></span> THE NO-CONTROLLER CLUB</span>
+          <h1><span class="ready-line">READY. SET.</span><br><em>SLICE.</em><span class="title-star" aria-hidden="true">✳</span></h1>
+          <p class="intro">Turn your index finger into a blade.<br>Make fruit salad. Avoid the explosives.</p>
+          <fieldset class="mode-picker"><legend>Pick your vibe</legend><label><input type="radio" name="mode" value="arcade" checked><span><b>✦ Arcade</b><small>60s · bombs · combos</small></span></label><label><input type="radio" name="mode" value="zen"><span><b>☀ Zen</b><small>90s · just juicy vibes</small></span></label></fieldset>
+          <button id="camera-start" class="primary-button"><span>✋</span> Play with your hand <span class="button-arrow">↗</span></button>
+          <button id="pointer-start" class="secondary-button">Or play with mouse / touch <span>→</span></button>
+          <p class="privacy">Camera stays on your device. Always.</p>
+          <p id="setup-status" class="setup-status" role="status" aria-live="polite"></p>
+        </div>
+        <div class="arena-tag">FRESH FRUIT. FRESH HIGH SCORES.</div>
+        <div class="welcome-best">PERSONAL BEST <b id="welcome-best">0</b></div>
+      </div>
+      <div id="game-footer" class="game-footer" hidden><span id="input-status">DRAG TO SLICE</span><span id="rule-hint">FRUIT +10 &nbsp; / &nbsp; BOMBS −30</span></div>
+      <div id="camera-preview" class="camera-preview" hidden><video id="camera-video" autoplay muted playsinline></video><canvas id="camera-skeleton"></canvas><span>YOUR BLADE CAM</span></div>
+      <div id="countdown" class="countdown" hidden><strong id="countdown-number">3</strong><span id="countdown-hint">Make some fruit salad.</span></div>
+      <div id="hand-notice" class="hand-notice" hidden>✋ Bring your hand back into view</div>
+      <div id="pause-panel" class="overlay" hidden><div class="modal-card"><span class="kicker">TAKE A BREATHER</span><h2 id="pause-title">ON ICE.</h2><p id="pause-copy">Your fruit can wait.</p><button id="resume-button" class="primary-button">Keep slicing <span>→</span></button><button id="pause-home" class="secondary-button">Back to the club</button></div></div>
+      <div id="results" class="overlay" hidden><div class="modal-card result-card"><span id="result-kicker" class="kicker">ROUND COMPLETE</span><h2 id="result-title">FRESH WORK.</h2><div id="result-score" class="result-score">0</div><span class="eyebrow">POINTS OF PURE JUICE</span><div class="result-stats"><div><strong id="result-fruit">0</strong><span>fruit sliced</span></div><div><strong id="result-combo">0</strong><span>best combo</span></div><div><strong id="result-bombs">0</strong><span>bombs hit</span></div></div><button id="play-again" class="primary-button">One more round <span>↗</span></button><button id="result-home" class="secondary-button">Back to the club</button></div></div>
+    </section>
+
+    <footer class="bottom-bar"><div><span class="step">01</span><span><b>Find your flow</b><small>Raise a hand. Point your index finger.</small></span></div><div><span class="step">02</span><span><b>Slice it like you mean it</b><small>Sweep through a bunch for a combo.</small></span></div><div><span class="step">03</span><span><b>Respect the bomb</b><small>One bad slice. 30 points gone.</small></span></div></footer>
+    <div class="site-note"><span>MADE FOR QUICK BREAKS & BIG SCORES.</span><span>GOOD HANDS. GREAT VIBES. <span class="lime">✳</span></span></div>
+  </main>
+  <dialog id="help-dialog"><div class="help-head"><span class="kicker">THE HOUSE RULES</span><button id="close-help" class="icon-button" aria-label="Close instructions">×</button></div><h2>A LITTLE HANDY<br>WORK.</h2><p><b>Hand mode:</b> allow the camera, step back a little, and hold one hand up in good light. The glowing circle on your index finger is your blade. Sweep it through the fruit.</p><p><b>Mouse or touch:</b> hold and drag across the play area. Lift to move safely around bombs.</p><p><b>Arcade:</b> 60 seconds. Each fruit earns 10 points. Slice 3 or more fruit in a quick chain for bonus points. Bombs cost 30 points and break your chain. Missed fruit only reset the chain.</p><p><b>Zen:</b> 90 seconds, no bombs. Just practice your flow.</p><p class="help-tip">Camera trouble? Use Chrome or Edge, allow camera access, and close other apps using the camera. Your camera is processed locally and stops when you leave the round.</p><div class="help-shortcuts"><span><kbd>Space</kbd> pause</span><span><kbd>M</kbd> sound</span><span><kbd>Esc</kbd> pause</span></div></dialog>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
