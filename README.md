@@ -53,4 +53,4 @@ Google's official [Hand Landmarker web guide](https://developers.google.com/edge
 - `dist/hand.js` and `dist/hand-worker.js`: camera lifecycle and MediaPipe detection.
 - `server.mjs`: local static server, bound to this computer only.
 
-Deploy the contents of `dist` on any static HTTPS host. All game and camera assets are included; no API key or backend is required.
+AUTHOR - ROOT
