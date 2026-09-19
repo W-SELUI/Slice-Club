@@ -21,7 +21,8 @@ export class HandTracker {
     if (!window.Worker || !window.OffscreenCanvas || !window.createImageBitmap) throw new Error('This browser cannot run the hand tracker. Try a current Chrome or Edge, or use mouse / touch.');
     try {
       onStatus('Allow your camera to join the club…');
-      const cameraRequest = navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'user', width: { ideal: 480, max: 640 }, height: { ideal: 360, max: 480 }, frameRate: { ideal: 24, max: 24 } } });
+      const mobile = navigator.userAgentData?.mobile || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const cameraRequest = navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'user', width: mobile ? { ideal: 480, max: 640 } : { ideal: 640 }, height: mobile ? { ideal: 360, max: 480 } : { ideal: 480 }, frameRate: mobile ? { ideal: 24, max: 24 } : { ideal: 30, max: 30 } } });
       cameraRequest.then(stream => { if (!isCurrent()) stream.getTracks().forEach(track => track.stop()); }, () => {});
       const stream = await timeout(cameraRequest, 25000, 'Camera permission is still waiting. Allow access, then try again—or play with mouse / touch.', signal);
       if (!isCurrent()) { stream.getTracks().forEach(track => track.stop()); return false; }

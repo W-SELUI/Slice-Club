@@ -8,7 +8,7 @@ self.onmessage = async ({ data }) => {
       const options = {
         baseOptions: { modelAssetPath: new URL('./assets/hand_landmarker.task', self.location.href).href, delegate: 'GPU' },
         runningMode: 'VIDEO', numHands: 1,
-        minHandDetectionConfidence: 0.6, minHandPresenceConfidence: 0.65, minTrackingConfidence: 0.6,
+        minHandDetectionConfidence: 0.55, minHandPresenceConfidence: 0.58, minTrackingConfidence: 0.5,
         canvas: new OffscreenCanvas(640, 480),
       };
       try { detector = await Vision.HandLandmarker.createFromOptions(files, options); }
