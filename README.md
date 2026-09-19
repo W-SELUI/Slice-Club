@@ -2,6 +2,24 @@
 
 A standalone HTML, CSS, and JavaScript fruit-slicing web game inspired by your team's idea. This event copy uses bigger fruit and 30-second rounds so more students can play. Your teammate's Python files and the original Slice Club folder remain untouched.
 
+## How to access
+
+Once the project is deployed by the owner, play it in any supported browser using the shared Vercel URL:
+
+`https://your-project.vercel.app`
+
+Replace the example URL above with the real project URL after deployment. Visiting the GitHub repository does not launch the game; GitHub is only hosting the source code. Deployment is managed manually by the project owner.
+
+To run it locally, clone the repository, open the project folder in VS Code, and start the local server:
+
+```powershell
+git clone <repository-url>
+cd slice-club-event-30s
+npm start
+```
+
+Then open `http://localhost:4173` in your browser. Node.js is required, and camera mode works on `localhost` or an HTTPS deployment.
+
 ## Play locally
 
 Install Node.js if needed, then double-click START-SLICE-CLUB.bat. It opens http://localhost:4173 in your browser and starts the local game server. You can also open this folder in a terminal and run npm start. No package installation is needed. Use a localhost or HTTPS URL for camera access; opening index.html directly will not work.
