@@ -6,9 +6,7 @@ A standalone HTML, CSS, and JavaScript fruit-slicing web game inspired by your t
 
 Once the project is deployed by the owner, play it in any supported browser using the shared Vercel URL:
 
-`https://your-project.vercel.app`
-
-Replace the example URL above with the real project URL after deployment. Visiting the GitHub repository does not launch the game; GitHub is only hosting the source code. Deployment is managed manually by the project owner.
+`https://selui-slice-game.vercel.app/`
 
 To run it locally, clone the repository, open the project folder in VS Code, and start the local server:
 

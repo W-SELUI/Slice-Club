@@ -333,6 +333,7 @@ function play() {
   clearInput();
   lostSince = null;
   show("countdown", false);
+  show("pause-panel", false);
   sound.tone(700, 1100, 0.18);
   text(
     "announcer",

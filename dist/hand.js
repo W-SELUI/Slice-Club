@@ -21,7 +21,7 @@ export class HandTracker {
     if (!window.Worker || !window.OffscreenCanvas || !window.createImageBitmap) throw new Error('This browser cannot run the hand tracker. Try a current Chrome or Edge, or use mouse / touch.');
     try {
       onStatus('Allow your camera to join the club…');
-      const cameraRequest = navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30, max: 30 } } });
+      const cameraRequest = navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'user', width: { ideal: 480, max: 640 }, height: { ideal: 360, max: 480 }, frameRate: { ideal: 24, max: 24 } } });
       cameraRequest.then(stream => { if (!isCurrent()) stream.getTracks().forEach(track => track.stop()); }, () => {});
       const stream = await timeout(cameraRequest, 25000, 'Camera permission is still waiting. Allow access, then try again—or play with mouse / touch.', signal);
       if (!isCurrent()) { stream.getTracks().forEach(track => track.stop()); return false; }
@@ -53,7 +53,7 @@ export class HandTracker {
         if (!isCurrent() || !this.active) return;
         this.raf = requestAnimationFrame(capture);
         if (document.hidden) { this.lastResponse = now; return; }
-        if (now - this.lastResponse > 7000) { this.fail('The camera stopped responding. Try again, or use mouse / touch.'); return; }
+        if (now - this.lastResponse > 15000) { this.fail('The camera stopped responding. Try again, or use mouse / touch.'); return; }
         if (this.busy || now - this.lastCapture < 33 || this.video.readyState < 2 || this.video.currentTime === this.lastVideoTime) return;
         this.busy = true; this.lastCapture = now; this.lastVideoTime = this.video.currentTime;
         try {
