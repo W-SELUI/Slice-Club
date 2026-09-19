@@ -1,10 +1,10 @@
-# Slice Club
+# Slice Club — Event Edition
 
-A new HTML, CSS, and JavaScript fruit-slicing web game inspired by your team's idea. Your teammate's Python files remain untouched.
+A standalone HTML, CSS, and JavaScript fruit-slicing web game inspired by your team's idea. This event copy uses bigger fruit and 30-second rounds so more students can play. Your teammate's Python files and the original Slice Club folder remain untouched.
 
 ## Play locally
 
-Install Node.js if needed, then open this folder in a terminal and run `npm start`. Open **http://localhost:4173** in Chrome or Edge. No package installation is needed. Use a localhost or HTTPS URL for camera access; opening index.html directly will not work.
+Install Node.js if needed, then double-click START-SLICE-CLUB.bat. It opens http://localhost:4173 in your browser and starts the local game server. You can also open this folder in a terminal and run npm start. No package installation is needed. Use a localhost or HTTPS URL for camera access; opening index.html directly will not work.
 
 Choose **Play with your hand**, allow your camera, and raise one hand in good light. The skeleton is mirrored like a mirror; the glowing circle on the index finger is the blade. Swipe to slice. The game waits for a tracked hand before starting. If your hand disappears during a round, the blade is cleared immediately and the game pauses after a short grace period.
 
@@ -12,10 +12,11 @@ Mouse and touch: hold and drag to slice, then release to move past a bomb. Space
 
 ## Rules
 
-- Arcade: 60 seconds; fruit +10; bombs −30, with a score floor of zero.
+- Arcade: 30 seconds; fruit +10; bombs −30, with a score floor of zero.
 - Slice fruit less than 0.48 seconds apart to chain them. Starting with the third fruit, each fruit awards an extra 5 points per combo step, up to 25 extra points.
 - Missed fruit and bombs break the chain. Missed fruit do not deduct points.
-- Zen: 90 seconds with no bombs.
+- Zen: 30 seconds with no bombs.
+- Waves use several launch shapes, randomized fruit lanes, and interior bomb lanes so rounds do not feel scripted or rigged.
 - High scores are stored on this device, separately for each mode. Camera video is processed on the device; it is not recorded or uploaded.
 
 ## Implementation and checks

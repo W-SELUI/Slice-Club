@@ -32,7 +32,7 @@ export class OneEuroFilter {
 
 export class Blade {
   constructor() { this.clear(); }
-  clear() { this.point = null; this.time = null; this.trail = []; }
+  clear() { this.point = null; this.time = null; this.trail = []; this.visualFrom = null; this.visualTo = null; this.visualStart = 0; }
   move(point, time, { active = true, hand = false, width = 1000, height = 640 } = {}) {
     const previous = this.point;
     const gap = this.time === null ? Infinity : time - this.time;
@@ -40,10 +40,21 @@ export class Blade {
     // Never connect a newly acquired hand or a stale sample to its previous position.
     const discontinuity = gap > 0.24 || (hand && distance > Math.hypot(width, height) * 0.46);
     if (discontinuity || !active) this.trail = [];
+    this.visualFrom = discontinuity || !previous ? point : (this.visualTo || previous);
+    this.visualTo = point;
+    this.visualStart = performance.now() / 1000;
     this.point = point; this.time = time;
     if (active) this.trail.push({ ...point, time });
     this.trail = this.trail.filter(p => time - p.time < 0.19).slice(-22);
     return previous && active && !discontinuity && distance > (hand ? 2 : 1) ? [previous, point] : null;
+  }
+  visualPoint(now) {
+    if (!this.visualFrom || !this.visualTo) return this.point;
+    const progress = clamp((now - this.visualStart) / 0.045, 0, 1);
+    return {
+      x: this.visualFrom.x + (this.visualTo.x - this.visualFrom.x) * progress,
+      y: this.visualFrom.y + (this.visualTo.y - this.visualFrom.y) * progress,
+    };
   }
 }
 
@@ -52,7 +63,8 @@ export class GameEngine {
     this.width = width; this.height = height; this.onEvent = onEvent; this.random = random; this.state = 'idle'; this.entities = []; this.nextId = 1;
   }
   start(mode = 'arcade') {
-    this.mode = mode; this.duration = mode === 'zen' ? 90 : 60; this.remaining = this.duration;
+    // Short event rounds keep the queue moving while leaving enough time for a satisfying combo.
+    this.mode = mode; this.duration = 30; this.remaining = this.duration;
     this.elapsed = 0; this.score = 0; this.sliced = 0; this.bombs = 0; this.combo = 0; this.maxCombo = 0;
     this.lastSlice = -Infinity; this.spawnIn = 0.35; this.entities = []; this.state = 'playing';
   }
@@ -64,7 +76,8 @@ export class GameEngine {
   resume() { if (this.state === 'paused') this.state = 'playing'; }
   spawn(bomb = false, position = null) {
     const rnd = this.random, w = this.width, h = this.height;
-    const radius = clamp(w * 0.037, 27, 44);
+    // Fruit is intentionally generous for a classroom setup. Bombs keep their original size.
+    const radius = bomb ? clamp(w * 0.037, 27, 44) : clamp(w * 0.047, 34, 56);
     const x = position ?? radius * 1.5 + rnd() * (w - radius * 3);
     const y = h + radius * 1.5;
     const gravity = h * 1.52;
@@ -74,14 +87,42 @@ export class GameEngine {
     this.entities.push(fruit); return fruit;
   }
   wave() {
-    const count = this.width < 550 ? 2 + (this.random() < 0.5 ? 1 : 0) : 3 + (this.random() < 0.35 ? 1 : 0);
-    for (let i = 0; i < count; i++) this.spawn(false, this.width * (0.15 + 0.7 * (i + this.random() * 0.5) / count));
+    const rnd = this.random;
+    const count = this.width < 550 ? 2 + (rnd() < 0.5 ? 1 : 0) : 3 + (rnd() < 0.35 ? 1 : 0);
+    const pattern = Math.floor(rnd() * 4);
+    const denominator = Math.max(1, count - 1);
+    const launchedFruit = [];
+    for (let i = 0; i < count; i++) {
+      // Four launch shapes keep each wave readable but stop the game feeling like a conveyor belt.
+      const progress = i / denominator;
+      const shape = pattern === 1
+        ? 0.5 + (i - (count - 1) / 2) * 0.21 + (rnd() - 0.5) * 0.13
+        : pattern === 2
+          ? (i % 2 ? 0.78 - progress * 0.2 : 0.18 + progress * 0.2)
+          : pattern === 3
+            ? 1 - progress
+            : progress;
+      const lane = clamp(0.14 + 0.72 * shape + (rnd() - 0.5) * 0.1, 0.08, 0.92);
+      const fruit = this.spawn(false, this.width * lane);
+      if (pattern === 1) fruit.vx += (rnd() - 0.5) * this.width * 0.22;
+      if (pattern === 2) fruit.vy *= 0.88 + rnd() * 0.18;
+      if (pattern === 3) fruit.vx += (i % 2 ? -1 : 1) * this.width * 0.06;
+      launchedFruit.push(fruit);
+    }
     if (this.mode === 'arcade' && this.elapsed > 4 && this.random() < 0.4) {
-      const bomb = this.spawn(true);
-      // A bomb gets its own lane so a freshly launched bunch is fair to slice.
-      bomb.x = this.random() < 0.5 ? bomb.radius * 1.5 : this.width - bomb.radius * 1.5;
-      bomb.vx = (this.width / 2 - bomb.x) * 0.14;
-      bomb.vy *= 0.87;
+      // Bombs can occupy any safe lane, rather than always appearing on an edge.
+      const margin = Math.max(this.width * 0.06, 60);
+      let bombX = null;
+      for (let attempt = 0; attempt < 8; attempt++) {
+        const candidate = margin + rnd() * (this.width - margin * 2);
+        if (launchedFruit.every(fruit => Math.abs(candidate - fruit.x) > fruit.radius + 45)) {
+          bombX = candidate;
+          break;
+        }
+      }
+      const bomb = this.spawn(true, bombX ?? margin + rnd() * (this.width - margin * 2));
+      bomb.vx = (rnd() - 0.5) * this.width * 0.32;
+      bomb.vy *= 0.83 + rnd() * 0.24;
     }
   }
   update(dt) {

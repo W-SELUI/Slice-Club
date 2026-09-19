@@ -44,21 +44,33 @@ test('idle hand jitter and mouse hover cannot cut fruit', () => {
 });
 test('pausing freezes time, movement, and scoring; resuming restores play', () => {
   const g = game(); const f = target(g, 400); g.pause(); g.update(5); g.slice({ x: 0, y: 250 }, { x: 800, y: 250 });
-  assert.equal(g.remaining, 60); assert.equal(f.y, 250); assert.equal(g.score, 0);
-  g.resume(); g.update(0.25); assert.equal(g.remaining, 59.75);
+  assert.equal(g.remaining, 30); assert.equal(f.y, 250); assert.equal(g.score, 0);
+  g.resume(); g.update(0.25); assert.equal(g.remaining, 29.75);
 });
 test('the round ends exactly once and no slices can score afterward', () => {
   const events = [], g = game('arcade', events); target(g, 400);
-  g.update(59.9); g.update(0.2); g.update(4); g.slice({ x: 0, y: 250 }, { x: 800, y: 250 });
+  g.update(29.9); g.update(0.2); g.update(4); g.slice({ x: 0, y: 250 }, { x: 800, y: 250 });
   assert.equal(g.remaining, 0); assert.equal(g.state, 'finished'); assert.equal(events.filter(e => e.type === 'finish').length, 1); assert.equal(g.score, 0);
 });
-test('Zen lasts 90 seconds and never spawns bombs', () => {
+test('Zen lasts 30 seconds and never spawns bombs', () => {
   const g = game('zen'); g.elapsed = 40;
   for (let i = 0; i < 100; i++) g.wave();
-  assert.equal(g.duration, 90); assert.ok(g.entities.every(f => !f.bomb));
+  assert.equal(g.duration, 30); assert.ok(g.entities.every(f => !f.bomb));
 });
 test('Arcade waves include bombs after the opening warmup', () => {
   const g = game(); g.random = () => 0.2; g.elapsed = 5; g.wave(); assert.ok(g.entities.some(f => f.bomb));
+});
+test('fruit waves rotate through different launch shapes instead of one fixed left-to-right order', () => {
+  const g = game(); g.random = () => 0.8; g.elapsed = 1; g.wave();
+  const fruit = g.entities.filter(item => !item.bomb);
+  assert.ok(fruit[0].x > fruit.at(-1).x);
+});
+test('bombs can launch from interior lanes instead of always hugging a side', () => {
+  const g = game(); g.random = () => 0.2; g.elapsed = 5; g.wave();
+  const bomb = g.entities.find(item => item.bomb);
+  assert.ok(bomb);
+  assert.ok(bomb.x > bomb.radius * 2.1);
+  assert.ok(bomb.x < g.width - bomb.radius * 2.1);
 });
 test('frame rates do not change the round length or materially change trajectories', () => {
   function simulate(fps) { const g = game(); const f = target(g, 400); f.vy = -600; for (let i = 0; i < fps; i++) g.update(1 / fps); return { y: f.y, remaining: g.remaining }; }
@@ -67,7 +79,7 @@ test('frame rates do not change the round length or materially change trajectori
 });
 test('restarting clears the previous score, combo, bombs, and objects', () => {
   const g = game(); target(g, 400); g.score = 400; g.combo = 5; g.bombs = 3; g.start('zen');
-  assert.equal(g.score, 0); assert.equal(g.combo, 0); assert.equal(g.bombs, 0); assert.equal(g.entities.length, 0); assert.equal(g.remaining, 90);
+  assert.equal(g.score, 0); assert.equal(g.combo, 0); assert.equal(g.bombs, 0); assert.equal(g.entities.length, 0); assert.equal(g.remaining, 30);
 });
 test('adaptive filtering reduces tiny jitter and resets after a tracking gap', () => {
   const f = new OneEuroFilter(); f.filter(100, 1); const steady = f.filter(102, 1.03);
