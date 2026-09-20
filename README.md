@@ -11,7 +11,7 @@ Once the project is deployed by the owner, play it in any supported browser usin
 To run it locally, clone the repository, open the project folder in VS Code, and start the local server:
 
 ```powershell
-git clone <Slice-Club>
+git clone https://github.com/W-SELUI/Slice-Club.git
 cd slice-club-event-30s
 npm start
 ```
